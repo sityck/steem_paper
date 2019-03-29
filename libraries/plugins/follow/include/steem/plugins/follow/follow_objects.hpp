@@ -28,8 +28,10 @@ enum follow_type
 {
    undefined,
    blog,
-   ignore
+   ignore,
+   affect
 };
+//value = 0;1;2;3
 
 class follow_object : public object< follow_object_type, follow_object >
 {
@@ -47,6 +49,7 @@ class follow_object : public object< follow_object_type, follow_object >
       account_name_type follower;
       account_name_type following;
       uint16_t          what = 0;
+      uint32_t          factor = 0;
 };
 
 typedef oid< follow_object > follow_id_type;
@@ -162,6 +165,7 @@ class follow_count_object : public object< follow_count_object_type, follow_coun
       account_name_type account;
       uint32_t          follower_count  = 0;
       uint32_t          following_count = 0;
+      uint32_t          factor_count = 0;
 };
 
 typedef oid< follow_count_object > follow_count_id_type;
@@ -286,7 +290,7 @@ typedef multi_index_container<
 
 } } } // steem::plugins::follow
 
-FC_REFLECT_ENUM( steem::plugins::follow::follow_type, (undefined)(blog)(ignore) )
+FC_REFLECT_ENUM( steem::plugins::follow::follow_type, (undefined)(blog)(ignore)(affect) )
 
 FC_REFLECT( steem::plugins::follow::follow_object, (id)(follower)(following)(what) )
 CHAINBASE_SET_INDEX_TYPE( steem::plugins::follow::follow_object, steem::plugins::follow::follow_index )
@@ -300,7 +304,7 @@ CHAINBASE_SET_INDEX_TYPE( steem::plugins::follow::blog_object, steem::plugins::f
 FC_REFLECT( steem::plugins::follow::reputation_object, (id)(account)(reputation) )
 CHAINBASE_SET_INDEX_TYPE( steem::plugins::follow::reputation_object, steem::plugins::follow::reputation_index )
 
-FC_REFLECT( steem::plugins::follow::follow_count_object, (id)(account)(follower_count)(following_count) )
+FC_REFLECT( steem::plugins::follow::follow_count_object, (id)(account)(follower_count)(following_count)(factor_count) )
 CHAINBASE_SET_INDEX_TYPE( steem::plugins::follow::follow_count_object, steem::plugins::follow::follow_count_index )
 
 FC_REFLECT( steem::plugins::follow::blog_author_stats_object, (id)(blogger)(guest)(count) )

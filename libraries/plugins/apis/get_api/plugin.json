@@ -1,0 +1,5 @@
+{
+    "plugin_name": "get_api",
+    "plugin_namespace": "get",
+    "plugin_project": "get_api_plugin"
+}

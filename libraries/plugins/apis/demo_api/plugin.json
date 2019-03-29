@@ -1,0 +1,5 @@
+{
+    "plugin_name": "demo_api",
+    "plugin_namespace": "demo",
+    "plugin_project": "demo_api_plugin"
+}

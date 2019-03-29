@@ -18,6 +18,7 @@ void follow_evaluator::do_apply( const follow_operation& o )
          follow_map[ "undefined" ] = follow_type::undefined;
          follow_map[ "blog" ] = follow_type::blog;
          follow_map[ "ignore" ] = follow_type::ignore;
+         follow_map[ "affect" ] = follow_type::affect;
 
          return follow_map;
       }();
@@ -26,18 +27,24 @@ void follow_evaluator::do_apply( const follow_operation& o )
       auto itr = idx.find( boost::make_tuple( o.follower, o.following ) );
 
       uint16_t what = 0;
+      uint32_t factor = 0;
       bool is_following = false;
+      bool is_affect = false;
 
       for( const auto& target : o.what )
       {
          switch( follow_type_map[ target ] )
          {
             case blog:
-               what |= 1 << blog;
+               what |= 1 << blog;  //what = 2^blog = 2
                is_following = true;
                break;
             case ignore:
-               what |= 1 << ignore;
+               what |= 1 << ignore;  //what = 2^ignore = 4
+               break;
+            case affect:
+               factor = 1;
+               is_affect = true;
                break;
             default:
                //ilog( "Encountered unknown option ${o}", ("o", target) );
@@ -45,8 +52,8 @@ void follow_evaluator::do_apply( const follow_operation& o )
          }
       }
 
-      if( what & ( 1 << ignore ) )
-         FC_ASSERT( !( what & ( 1 << blog ) ), "Cannot follow blog and ignore author at the same time" );
+      if( what & ( 1 << ignore ) )  //if what = 2(blog) ; what & 4 = 0(false)
+         FC_ASSERT( !( what & ( 1 << blog ) ), "Cannot follow blog and ignore author at the same time" ); //what = 110
 
       bool was_followed = false;
 
@@ -57,11 +64,12 @@ void follow_evaluator::do_apply( const follow_operation& o )
             obj.follower = o.follower;
             obj.following = o.following;
             obj.what = what;
+            obj.factor = factor;
          });
       }
-      else
+      else if(factor == 0) //no affect,so we will cancel they follow
       {
-         was_followed = itr->what & 1 << blog;
+         was_followed = itr->what & 1 << blog;  //they had a follow,so,this time will cancel ; itr->what = 2
 
          _db.modify( *itr, [&]( follow_object& obj )
          {
@@ -80,13 +88,13 @@ void follow_evaluator::do_apply( const follow_operation& o )
             if( is_following )
                obj.following_count = 1;
          });
-      }
+      }  //new flower count
       else
       {
          _db.modify( *follower, [&]( follow_count_object& obj )
          {
             if( was_followed )
-               obj.following_count--;
+               obj.following_count--;  //it is a cancel op
             if( is_following )
                obj.following_count++;
          });
@@ -102,6 +110,8 @@ void follow_evaluator::do_apply( const follow_operation& o )
 
             if( is_following )
                obj.follower_count = 1;
+            if( is_affect )
+               obj.factor_count = 1;
          });
       }
       else
@@ -112,6 +122,8 @@ void follow_evaluator::do_apply( const follow_operation& o )
                obj.follower_count--;
             if( is_following )
                obj.follower_count++;
+            if( is_affect )
+               obj.factor_count++;
          });
       }
    }
