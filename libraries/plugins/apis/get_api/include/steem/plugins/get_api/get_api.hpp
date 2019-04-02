@@ -53,7 +53,7 @@ struct api_operation_object
 
 struct get_sum_return
 {
-    int64_t sum;
+    string sum;
 };
 
 struct get_sum_args

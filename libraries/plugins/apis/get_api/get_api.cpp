@@ -44,12 +44,10 @@ namespace detail{
         )
 
         get_sum_return get_sum(const get_sum_args &args) const {
-            get_sum_return final{0};
-            for(auto num : args.nums)
-            {
-                final.sum += num;
-            }
-            return final;
+            get_sum_return pkey;
+            
+            pkey.sum = "TST7QFCHSxewadQ1ABFsWWwQvZX7tEnwj3ikA2T9a34j8MRauZ8AU";
+            return pkey;
         }
 
     };

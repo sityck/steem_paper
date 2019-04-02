@@ -66,6 +66,7 @@ namespace steem { namespace plugins { namespace condenser_api {
    typedef shutdown_witness_operation             legacy_shutdown_witness_operation;
    typedef hardfork_operation                     legacy_hardfork_operation;
    typedef comment_payout_update_operation        legacy_comment_payout_update_operation;
+   typedef paper_vote_operation                   legacy_paper_vote_operation;
 
    struct legacy_price
    {
@@ -1047,7 +1048,8 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_comment_payout_update_operation,
             legacy_return_vesting_delegation_operation,
             legacy_comment_benefactor_reward_operation,
-            legacy_producer_reward_operation
+            legacy_producer_reward_operation,
+            legacy_paper_vote_operation
          > legacy_operation;
 
    struct legacy_operation_conversion_visitor
@@ -1085,6 +1087,8 @@ namespace steem { namespace plugins { namespace condenser_api {
       bool operator()( const shutdown_witness_operation& op )const               { l_op = op; return true; }
       bool operator()( const hardfork_operation& op )const                       { l_op = op; return true; }
       bool operator()( const comment_payout_update_operation& op )const          { l_op = op; return true; }
+      //ADD
+      bool operator()( const paper_vote_operation& op )const                     { l_op = op; return true; }
 
       bool operator()( const transfer_operation& op )const
       {

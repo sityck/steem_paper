@@ -820,6 +820,8 @@ void comment_evaluator::do_apply( const comment_operation& o )
             from_string( con.body, o.body );
          }
          from_string( con.json_metadata, o.json_metadata );
+         from_string( con.reference, o.reference); //ADD
+         from_string( con.type, o.type);
       });
    #endif
 
@@ -874,6 +876,10 @@ void comment_evaluator::do_apply( const comment_operation& o )
          if( o.title.size() )         from_string( con.title, o.title );
          if( o.json_metadata.size() )
             from_string( con.json_metadata, o.json_metadata );
+         if( o.reference.size() )
+            from_string( con.reference,o.reference ); //ADD
+         if( o.type.size())
+            from_string( con.type,o.type );
 
          if( o.body.size() ) {
             try {
@@ -2767,6 +2773,12 @@ void claim_reward_balance_evaluator::do_apply( const claim_reward_balance_operat
    });
 
    _db.adjust_proxied_witness_votes( acnt, op.reward_vests.amount );
+}
+
+//ADD
+void paper_vote_evaluator::do_apply( const paper_vote_operation& o )
+{
+   FC_ASSERT( false, "paper vote is currently disabled." );
 }
 
 #ifdef STEEM_ENABLE_SMT

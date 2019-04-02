@@ -294,6 +294,14 @@ struct count_operation_visitor
       execution_time_count += _e.witness_set_properties_operation_exec_time;
    }
 
+   void operator()( const paper_vote_operation& op )const
+   {
+      FC_TODO( "Change RC state bytes computation to take SMT's into account" )
+      state_bytes_count += _w.comment_vote_object_base_size;
+      execution_time_count += _e.vote_operation_exec_time;
+   }
+
+
 #ifdef STEEM_ENABLE_SMT
    void operator()( const claim_reward_balance2_operation& op )const
    {

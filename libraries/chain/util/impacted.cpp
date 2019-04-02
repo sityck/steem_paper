@@ -185,6 +185,11 @@ struct get_impacted_account_visitor
       _impacted.insert( op.new_account_name );
    }
 
+   void operator()( const paper_vote_operation& op )
+   {
+      _impacted.insert( op.voter );
+      _impacted.insert( op.author );
+   }
 
    // vops
 

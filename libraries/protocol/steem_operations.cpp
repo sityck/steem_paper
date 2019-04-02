@@ -85,6 +85,11 @@ namespace steem { namespace protocol {
       {
          FC_ASSERT( fc::json::is_valid(json_metadata), "JSON Metadata not valid JSON" );
       }
+
+      if( reference.size() > 0)
+      {
+         //ADD validate
+      }
    }
 
    struct comment_options_extension_validate_visitor
@@ -668,6 +673,15 @@ namespace steem { namespace protocol {
       FC_ASSERT( reward_sbd.amount >= 0, "Cannot claim a negative amount" );
       FC_ASSERT( reward_vests.amount >= 0, "Cannot claim a negative amount" );
       FC_ASSERT( reward_steem.amount > 0 || reward_sbd.amount > 0 || reward_vests.amount > 0, "Must claim something." );
+   }
+
+   //ADD
+   void paper_vote_operation::validate() const
+   {
+      validate_account_name( voter );
+      validate_account_name( author );
+
+      validate_permlink( permlink );
    }
 
 #ifdef STEEM_ENABLE_SMT

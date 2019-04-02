@@ -76,6 +76,8 @@ namespace steem { namespace protocol {
       string            title;
       string            body;
       string            json_metadata;
+      string            reference;
+      string            type;
 
       void validate()const;
       void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
@@ -932,6 +934,18 @@ namespace steem { namespace protocol {
       }
    };
 
+   //ADD paper vote
+   struct paper_vote_operation : public base_operation
+   {
+      account_name_type    voter;
+      account_name_type    author;
+      string               permlink;
+      int16_t              count = 0;
+
+      void validate()const;
+      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(voter); }
+   };
+
 
    /**
     * Each account lists another account as their recovery account.
@@ -1117,7 +1131,7 @@ FC_REFLECT( steem::protocol::witness_update_operation, (owner)(url)(block_signin
 FC_REFLECT( steem::protocol::witness_set_properties_operation, (owner)(props)(extensions) )
 FC_REFLECT( steem::protocol::account_witness_vote_operation, (account)(witness)(approve) )
 FC_REFLECT( steem::protocol::account_witness_proxy_operation, (account)(proxy) )
-FC_REFLECT( steem::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata) )
+FC_REFLECT( steem::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata)(reference)(type) )
 FC_REFLECT( steem::protocol::vote_operation, (voter)(author)(permlink)(weight) )
 FC_REFLECT( steem::protocol::custom_operation, (required_auths)(id)(data) )
 FC_REFLECT( steem::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json) )
@@ -1130,6 +1144,7 @@ FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
 
 FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
 FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
+FC_REFLECT( steem::protocol::paper_vote_operation, (voter)(author)(permlink)(count) )
 
 #ifdef STEEM_ENABLE_SMT
 FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_curation_rewards) )

@@ -943,6 +943,8 @@ class wallet_api
          string title,
          string body,
          string json,
+         string reference,
+         string type,
          bool broadcast );
 
       /**

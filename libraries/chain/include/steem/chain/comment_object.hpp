@@ -120,7 +120,7 @@ namespace steem { namespace chain {
       public:
          template< typename Constructor, typename Allocator >
          comment_content_object( Constructor&& c, allocator< Allocator > a ) :
-            title( a ), body( a ), json_metadata( a )
+            title( a ), body( a ), json_metadata( a ), reference( a ), type( a )
          {
             c( *this );
          }
@@ -132,6 +132,8 @@ namespace steem { namespace chain {
          shared_string     title;
          shared_string     body;
          shared_string     json_metadata;
+         shared_string     reference;  //ADD
+         shared_string     type;
    };
 
    /**
@@ -278,7 +280,7 @@ FC_REFLECT( steem::chain::comment_object,
 CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_object, steem::chain::comment_index )
 
 FC_REFLECT( steem::chain::comment_content_object,
-            (id)(comment)(title)(body)(json_metadata) )
+            (id)(comment)(title)(body)(json_metadata)(reference)(type) )
 CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_content_object, steem::chain::comment_content_index )
 
 FC_REFLECT( steem::chain::comment_vote_object,

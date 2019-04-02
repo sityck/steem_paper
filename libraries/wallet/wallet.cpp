@@ -2318,6 +2318,8 @@ condenser_api::legacy_signed_transaction wallet_api::post_comment(
    string title,
    string body,
    string json,
+   string reference,
+   string type,
    bool broadcast )
 {
    FC_ASSERT( !is_locked() );
@@ -2329,6 +2331,8 @@ condenser_api::legacy_signed_transaction wallet_api::post_comment(
    op.title = title;
    op.body = body;
    op.json_metadata = json;
+   op.reference = reference;
+   op.type = type;
 
    signed_transaction tx;
    tx.operations.push_back( op );
