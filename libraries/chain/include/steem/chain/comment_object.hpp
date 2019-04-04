@@ -134,6 +134,7 @@ namespace steem { namespace chain {
          shared_string     json_metadata;
          shared_string     reference;  //ADD
          shared_string     type;
+         uint32_t          affect_count = 0;
    };
 
    /**
@@ -280,7 +281,7 @@ FC_REFLECT( steem::chain::comment_object,
 CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_object, steem::chain::comment_index )
 
 FC_REFLECT( steem::chain::comment_content_object,
-            (id)(comment)(title)(body)(json_metadata)(reference)(type) )
+            (id)(comment)(title)(body)(json_metadata)(reference)(type)(affect_count) )
 CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_content_object, steem::chain::comment_content_index )
 
 FC_REFLECT( steem::chain::comment_vote_object,

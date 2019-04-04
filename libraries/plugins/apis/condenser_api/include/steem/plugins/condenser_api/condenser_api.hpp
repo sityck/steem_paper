@@ -263,6 +263,9 @@ struct api_comment_object
       title( c.title ),
       body( c.body ),
       json_metadata( c.json_metadata ),
+      reference( c.reference ),
+      type( c.type ),
+      affect_count( c.affect_count ),
       last_update( c.last_update ),
       created( c.created ),
       active( c.active ),
@@ -307,6 +310,9 @@ struct api_comment_object
    string            title;
    string            body;
    string            json_metadata;
+   string            reference;
+   string            type;   //ADD
+   uint32_t          affect_count;
    time_point_sec    last_update;
    time_point_sec    created;
    time_point_sec    active;
@@ -1158,7 +1164,7 @@ FC_REFLECT_DERIVED( steem::plugins::condenser_api::extended_account, (steem::plu
 FC_REFLECT( steem::plugins::condenser_api::api_comment_object,
              (id)(author)(permlink)
              (category)(parent_author)(parent_permlink)
-             (title)(body)(json_metadata)(last_update)(created)(active)(last_payout)
+             (title)(body)(json_metadata)(reference)(type)(affect_count)(last_update)(created)(active)(last_payout)
              (depth)(children)
              (net_rshares)(abs_rshares)(vote_rshares)
              (children_abs_rshares)(cashout_time)(max_cashout_time)
