@@ -822,6 +822,7 @@ void comment_evaluator::do_apply( const comment_operation& o )
          from_string( con.json_metadata, o.json_metadata );
          from_string( con.reference, o.reference); //ADD
          from_string( con.type, o.type);
+         from_string( con.anonymous, o.anonymous);
       });
    #endif
 
@@ -880,6 +881,8 @@ void comment_evaluator::do_apply( const comment_operation& o )
             from_string( con.reference,o.reference ); //ADD
          if( o.type.size())
             from_string( con.type,o.type );
+         if( o.anonymous.size())
+            from_string( con.anonymous, o.anonymous);
 
          if( o.body.size() ) {
             try {
