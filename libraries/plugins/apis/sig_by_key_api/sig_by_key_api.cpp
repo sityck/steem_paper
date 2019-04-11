@@ -309,12 +309,6 @@ private:
       const char *a = inttohex(m);
       str += a;
     }
-    /*  for (int i = str.length() / 2; i < len; i++)
-      cout << (unsigned int)bin[i];
-    cout << endl;
-    cout << str << endl; 
-    cout << str.length() << " " << len << endl;
-    */
 
     return str;
   }
@@ -326,7 +320,7 @@ private:
     int l;
     l = g1_size_bin(g2.g, 1);
     uint8_t bin[len];
-    for (int i = 0; i < str.length(); i += 2)
+    for (unsigned int i = 0; i < str.length(); i += 2)
     {
       std::string pair = str.substr(i, 2);
       bin[i / 2] = ::strtol(pair.c_str(), 0, 16);
@@ -351,12 +345,6 @@ private:
       const char *a = inttohex(m);
       str += a;
     }
-    /*  for (int i = str.length() / 2; i < len; i++)
-      cout << (unsigned int)bin[i];
-    cout << endl;
-    cout << str << endl; 
-    cout << str.length() << " " << len << endl;
-    */
 
     return str;
   }
@@ -368,7 +356,7 @@ private:
     int l;
     l = g2_size_bin(g2.g, 1);
     uint8_t bin[len];
-    for (int i = 0; i < str.length(); i += 2)
+    for (unsigned int i = 0; i < str.length(); i += 2)
     {
       std::string pair = str.substr(i, 2);
       bin[i / 2] = ::strtol(pair.c_str(), 0, 16);
@@ -393,12 +381,6 @@ private:
       const char *a = inttohex(m);
       str += a;
     }
-    /*  for (int i = str.length() / 2; i < len; i++)
-      cout << (unsigned int)bin[i];
-    cout << endl;
-    cout << str << endl; 
-    cout << str.length() << " " << len << endl;
-    */
 
     return str;
   }
@@ -410,7 +392,7 @@ private:
     int l;
     l = gt_size_bin(g2.g, 1);
     uint8_t bin[len];
-    for (int i = 0; i < str.length(); i += 2)
+    for (unsigned int i = 0; i < str.length(); i += 2)
     {
       std::string pair = str.substr(i, 2);
       bin[i / 2] = ::strtol(pair.c_str(), 0, 16);
@@ -424,9 +406,7 @@ private:
     int len = CEIL(RELIC_BN_BITS, 8);
     uint8_t bin[RELIC_BN_BITS / 8 + 1];
     bn_write_bin(bin, len, zr.z);
-    /*  for (int i = 0; i < len; i++)
-      cout << bin[i];
-    cout << endl; */
+   
     //bin to str
     string str = "";
     for (int i = 96; i < len; i++)
@@ -435,9 +415,7 @@ private:
       const char *a = inttohex(m);
       str += a;
     }
-    /*  cout << endl;
-    cout << str << endl;
-    cout << str.length() << " " << len << endl; */
+    
 
     return str;
   }
@@ -448,7 +426,7 @@ private:
     uint8_t bin2[RELIC_BN_BITS / 8 + 1];
     for (int i = 0; i < 96; i++)
       bin2[i] = '\0';
-    for (int i = 0; i < str.length(); i += 2)
+    for (unsigned int i = 0; i < str.length(); i += 2)
     {
       std::string pair = str.substr(i, 2);
       bin2[i / 2 + 96] = ::strtol(pair.c_str(), 0, 16);
