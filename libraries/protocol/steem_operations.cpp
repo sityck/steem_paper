@@ -684,6 +684,14 @@ namespace steem { namespace protocol {
       validate_permlink( permlink );
    }
 
+   void claim_paper_operation::validate() const
+   {
+      validate_account_name( claimer );
+      validate_account_name( author );
+
+      validate_permlink( permlink );
+   }
+
 #ifdef STEEM_ENABLE_SMT
    void claim_reward_balance2_operation::validate()const
    {

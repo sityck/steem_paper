@@ -301,6 +301,15 @@ struct count_operation_visitor
       execution_time_count += _e.vote_operation_exec_time;
    }
 
+   void operator()( const claim_paper_operation& op )const
+   {
+      state_bytes_count +=
+           _w.comment_object_base_size
+         + _w.comment_object_permlink_char_size * op.permlink.size();
+         
+      execution_time_count += _e.comment_operation_exec_time;
+   }
+
 
 #ifdef STEEM_ENABLE_SMT
    void operator()( const claim_reward_balance2_operation& op )const

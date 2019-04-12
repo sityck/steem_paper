@@ -2566,6 +2566,7 @@ void database::initialize_evaluators()
    _my->_evaluator_registry.register_evaluator< set_reset_account_evaluator              >();
    _my->_evaluator_registry.register_evaluator< claim_reward_balance_evaluator           >();
    _my->_evaluator_registry.register_evaluator< paper_vote_evaluator                     >();
+   _my->_evaluator_registry.register_evaluator< claim_paper_evaluator                     >();
 #ifdef STEEM_ENABLE_SMT
    _my->_evaluator_registry.register_evaluator< claim_reward_balance2_evaluator          >();
 #endif

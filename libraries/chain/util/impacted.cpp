@@ -191,6 +191,12 @@ struct get_impacted_account_visitor
       _impacted.insert( op.author );
    }
 
+   void operator()( const claim_paper_operation& op )
+   {
+      _impacted.insert( op.claimer );
+      _impacted.insert( op.author );
+   }
+
    // vops
 
    void operator()( const author_reward_operation& op )
