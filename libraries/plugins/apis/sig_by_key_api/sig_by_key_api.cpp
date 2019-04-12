@@ -21,6 +21,9 @@ public:
   PairingGroup group;
   MasterPublicKey mpk;
   relicxx::G2 msk;
+  //如果需要新建多个群，则需要修改代码，改为获取对应群组的私钥
+  //目前的需求只存在一个群组，所以无需修改
+  //同一个群，提交论文和审稿对应的群公私钥是同一对
   GroupSecretKey gsk;
   UserSecretKey usk;
 
@@ -29,13 +32,11 @@ public:
 
   set_group_return set_group(const set_group_args &args)
   {
-    //判断群组是否存在等业务逻辑
-    //如果存在,获取msk
     set_up();
     groupSetup(args.groupID, msk, gsk, mpk);
     //返回gsk给group manager,先假设只返回给一个人
     set_group_return final;
-
+    //此处需保存每个group的私钥
     final.a0 = g2ToStr(gsk.a0);
     final.a2 = g2ToStr(gsk.a2);
     final.a3 = g2ToStr(gsk.a3);
@@ -68,7 +69,7 @@ public:
     usk.b5 = strToG1(args.b5);
     Signature sig;
     relicxx::ZR m = group.hashListToZR(args.m);
-    sign(m, usk, sig, mpk);
+    sign(args.groupID, args.userID, m, usk, sig, mpk);
 
     final.c0 = g2ToStr(sig.c0);
     final.c5 = g1ToStr(sig.c5);
@@ -80,6 +81,22 @@ public:
     final.y = zrToStr(sig.y);
     final.z = zrToStr(sig.z);
 
+    return final;
+  }
+  open_paper_return open_paper(const open_paper_args args)
+  {
+    open_paper_return final;
+    Signature sig;
+    sig.c0 = strToG2(args.c0);
+    sig.c5 = strToG1(args.c5);
+    sig.c6 = strToG2(args.c6);
+    sig.e1 = strToG1(args.e1);
+    sig.e2 = strToG2(args.e2);
+    sig.e3 = strToGT(args.e3);
+    sig.x = strToZR(args.x);
+    sig.y = strToZR(args.y);
+    sig.z = strToZR(args.z);
+    final.result = open(mpk, gsk, sig, args.userID);
     return final;
   }
   test_return test(const test_args &args)
@@ -105,11 +122,9 @@ public:
     usk2.b3 = strToG2(jgr.b3);
     usk2.b4 = strToG2(jgr.b4);
     usk2.b5 = strToG1(jgr.b5);
-    cout << "usk:::" << (usk.b0 == usk2.b0) << (usk.b3 == usk2.b3)
-         << (usk.b4 == usk2.b4) << (usk.b5 == usk2.b5);
 
     string str = "123";
-    get_sig_args sig_args{.m = str, .b0 = jgr.b0, .b3 = jgr.b3, .b4 = jgr.b4, .b5 = jgr.b5};
+    get_sig_args sig_args{.groupID = "science", .userID = "www", .m = str, .b0 = jgr.b0, .b3 = jgr.b3, .b4 = jgr.b4, .b5 = jgr.b5};
     get_sig_return gsr = get_sig(sig_args);
     Signature sig;
 
@@ -123,9 +138,9 @@ public:
     sig.y = strToZR(gsr.y);
     sig.z = strToZR(gsr.z);
 
-    if (open(mpk, gsk, sig) == group.hashListToZR(getUserID()))
-      cout << "open true" << endl;
-    if (verify(group.hashListToZR(str), sig, "science", mpk))
+    open_paper_args open_args{.userID = "www", .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .x = gsr.x, .y = gsr.y, .z = gsr.z};
+    open_paper_return opr = open_paper(open_args);
+    if (verify(group.hashListToZR(str), sig, "science", mpk) && opr.result == true)
       final.result = "true";
     else
       final.result = "false";
@@ -138,7 +153,7 @@ public:
     join("science", "www", gsk, usk, mpk);
     sign(m, usk, sig, mpk);
     verify(m, sig, "science", mpk);
-    if (open(mpk, gsk, sig) == group.hashListToZR("www") && verify(m, sig, "science", mpk))
+    if (open(mpk, gsk, sig)  && verify(m, sig, "science", mpk))
       final.result = "true";
     else
     {
@@ -194,10 +209,10 @@ private:
     usk.b4 = group.mul(gsk.a4, group.exp(mpk.hG2.at(4), r2));
     usk.b5 = group.mul(gsk.a5, group.exp(mpk.g, r2));
   }
-  void sign(const ZR &m, const UserSecretKey &usk, Signature &sig, const MasterPublicKey &mpk)
+  void sign(string groupID, string userID, const ZR &m, const UserSecretKey &usk, Signature &sig, const MasterPublicKey &mpk)
   {
-    const ZR gUserID = group.hashListToZR(getUserID());
-    const ZR gGroupID = group.hashListToZR(getGroupID());
+    const ZR gUserID = group.hashListToZR(userID);
+    const ZR gGroupID = group.hashListToZR(groupID);
     //G(UserID),G(r4),k are public
     const ZR r3 = group.randomZR();
     //r4 use to blind identity
@@ -242,15 +257,15 @@ private:
            sig.e3 == group.mul(group.exp(mpk.n, sig.x), group.exp(group.pair(mpk.hibeg1, mpk.g2), k));
   }
 
-  ZR open(const MasterPublicKey &mpk, const GroupSecretKey &gsk, const Signature &sig)
+  bool open(const MasterPublicKey &mpk, const GroupSecretKey &gsk, const Signature &sig, string userID)
   {
-    const ZR gUserID = group.hashListToZR(getUserID());
+    const ZR gUserID = group.hashListToZR(userID);
     relicxx::GT t = group.exp(group.pair(mpk.hibeg1, mpk.g2), sig.z);
     //goes through all user identifiers here
     if (sig.e3 == group.mul(group.exp(mpk.n, gUserID), t))
-      return gUserID;
+      return true;
     else
-      return group.randomZR();
+      return false;
   }
   void set_up()
   {
@@ -277,21 +292,10 @@ private:
     msk = strToG2(smsk);
     //setup(mpk, msk);
   }
-  string getGroupID() const
-  {
-    return "science";
-  }
-  //可能需要多种场景
-  string getUserID() const
-  {
-    return "www";
-  }
-  relicxx::G2 getMsk() const
-  {
-    return group.randomG2();
-  }
+
   relicxx::G2 getGsk() const
   {
+    //此处需读取数据库返回群私钥
     return group.randomG2();
   }
   string g1ToStr(relicxx::G1 g) const
@@ -406,7 +410,7 @@ private:
     int len = CEIL(RELIC_BN_BITS, 8);
     uint8_t bin[RELIC_BN_BITS / 8 + 1];
     bn_write_bin(bin, len, zr.z);
-   
+
     //bin to str
     string str = "";
     for (int i = 96; i < len; i++)
@@ -415,7 +419,6 @@ private:
       const char *a = inttohex(m);
       str += a;
     }
-    
 
     return str;
   }
@@ -468,7 +471,7 @@ void sig_by_key_api_plugin::plugin_initialize(const appbase::variables_map &opti
   api = std::make_shared<sig_by_key_api>();
 }
 
-DEFINE_LOCKLESS_APIS(sig_by_key_api, (get_sig)(set_group)(join_group)(test))
+DEFINE_LOCKLESS_APIS(sig_by_key_api, (set_group)(join_group)(get_sig)(open_paper)(test))
 } // namespace sig_by_key
 } // namespace plugins
 } // namespace steem
