@@ -690,6 +690,9 @@ namespace steem { namespace protocol {
       validate_account_name( author );
 
       validate_permlink( permlink );
+      if( parent_author.size() )
+         validate_account_name( parent_author );
+      validate_permlink( parent_permlink );
    }
 
 #ifdef STEEM_ENABLE_SMT
