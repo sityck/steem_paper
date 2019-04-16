@@ -87,6 +87,23 @@ struct open_paper_return
 {
   bool result;
 };
+struct verify_user_args{
+  string groupID;
+  string m;
+  string c0;
+  string c5;
+  string c6;
+  string e1;
+  string e2;
+  string e3;
+  string x;
+  string y;
+  string z;
+
+};
+struct verify_user_return{
+  bool result;
+};
 struct test_args
 {
   string test;
@@ -101,7 +118,7 @@ public:
   sig_by_key_api();
   ~sig_by_key_api();
 
-  DECLARE_API((set_group)(join_group)(get_sig)(open_paper)(test))
+  DECLARE_API((set_group)(join_group)(get_sig)(open_paper)(test)(verify_user))
 
 private:
   std::unique_ptr<detail::sig_by_key_api_impl> my;
@@ -121,3 +138,5 @@ FC_REFLECT(steem::plugins::sig_by_key::test_args, (test))
 FC_REFLECT(steem::plugins::sig_by_key::test_return, (result))
 FC_REFLECT(steem::plugins::sig_by_key::open_paper_args, (userID)(c0)(c5)(c6)(e1)(e2)(e3)(x)(y)(z))
 FC_REFLECT(steem::plugins::sig_by_key::open_paper_return, (result))
+FC_REFLECT(steem::plugins::sig_by_key::verify_user_args, (groupID)(m)(c0)(c5)(c6)(e1)(e2)(e3)(x)(y)(z))
+FC_REFLECT(steem::plugins::sig_by_key::verify_user_return, (result))

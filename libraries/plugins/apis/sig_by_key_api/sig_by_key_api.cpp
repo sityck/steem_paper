@@ -46,6 +46,7 @@ public:
   }
   join_group_return join_group(const join_group_args &args)
   {
+    set_up();
     string groupID = args.groupID;
     string userID = args.userID;
 
@@ -61,6 +62,7 @@ public:
   // 返回用户签名
   get_sig_return get_sig(const get_sig_args &args)
   {
+    set_up();
     get_sig_return final;
     UserSecretKey usk;
     usk.b0 = strToG2(args.b0);
@@ -80,11 +82,11 @@ public:
     final.x = zrToStr(sig.x);
     final.y = zrToStr(sig.y);
     final.z = zrToStr(sig.z);
-
     return final;
   }
   open_paper_return open_paper(const open_paper_args args)
   {
+    set_up();
     open_paper_return final;
     Signature sig;
     sig.c0 = strToG2(args.c0);
@@ -97,6 +99,23 @@ public:
     sig.y = strToZR(args.y);
     sig.z = strToZR(args.z);
     final.result = open(mpk, gsk, sig, args.userID);
+    return final;
+  }
+  verify_user_return verify_user(const verify_user_args args)
+  {
+    set_up();
+    verify_user_return final;
+    Signature sig;
+    sig.c0 = strToG2(args.c0);
+    sig.c5 = strToG1(args.c5);
+    sig.c6 = strToG2(args.c6);
+    sig.e1 = strToG1(args.e1);
+    sig.e2 = strToG2(args.e2);
+    sig.e3 = strToGT(args.e3);
+    sig.x = strToZR(args.x);
+    sig.y = strToZR(args.y);
+    sig.z = strToZR(args.z);
+    final.result = verify(group.hashListToZR(args.m), sig, args.groupID, mpk);
     return final;
   }
   test_return test(const test_args &args)
@@ -140,7 +159,9 @@ public:
 
     open_paper_args open_args{.userID = "www", .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .x = gsr.x, .y = gsr.y, .z = gsr.z};
     open_paper_return opr = open_paper(open_args);
-    if (verify(group.hashListToZR(str), sig, "science", mpk) && opr.result == true)
+
+    verify_user_args ver_args{.groupID = "science", .m = str, .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .x = gsr.x, .y = gsr.y, .z = gsr.z};
+    if (verify_user(ver_args).result == true && opr.result == true)
       final.result = "true";
     else
       final.result = "false";
@@ -249,7 +270,7 @@ private:
     d2 = group.exp(group.mul(d2, group.mul(group.exp(mpk.hG2.at(3), m), sig.c6)), t);
     relicxx::GT delta3 = group.mul(M, group.exp(group.pair(mpk.hibeg1, mpk.g2), t));
     relicxx::GT result = group.mul(delta3, group.div(group.pair(sig.c5, d2), group.pair(d1, sig.c0)));
-
+    cout << (M == result) << (sig.c6 == group.mul(group.exp(mpk.hG2.at(2), sig.x), group.exp(mpk.hG2.at(4), y))) << (sig.e1 == group.exp(mpk.g, k)) << (sig.e2 == group.exp(group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID)), k)) << (sig.e3 == group.mul(group.exp(mpk.n, sig.x), group.exp(group.pair(mpk.hibeg1, mpk.g2), k)));
     return M == result &&
            sig.c6 == group.mul(group.exp(mpk.hG2.at(2), sig.x), group.exp(mpk.hG2.at(4), y)) &&
            sig.e1 == group.exp(mpk.g, k) &&
@@ -471,7 +492,7 @@ void sig_by_key_api_plugin::plugin_initialize(const appbase::variables_map &opti
   api = std::make_shared<sig_by_key_api>();
 }
 
-DEFINE_LOCKLESS_APIS(sig_by_key_api, (set_group)(join_group)(get_sig)(open_paper)(test))
+DEFINE_LOCKLESS_APIS(sig_by_key_api, (set_group)(join_group)(get_sig)(open_paper)(test)(verify_user))
 } // namespace sig_by_key
 } // namespace plugins
 } // namespace steem
