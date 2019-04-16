@@ -947,6 +947,18 @@ namespace steem { namespace protocol {
       void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(voter); }
    };
 
+   //ADD paper claim
+   struct claim_paper_operation : public base_operation
+   {
+      account_name_type    claimer;
+      account_name_type    author;
+      string               permlink;
+
+      void validate()const;
+      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(claimer); }
+   };
+   
+
 
    /**
     * Each account lists another account as their recovery account.
@@ -1146,6 +1158,7 @@ FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
 FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
 FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
 FC_REFLECT( steem::protocol::paper_vote_operation, (voter)(author)(permlink)(count) )
+FC_REFLECT( steem::protocol::claim_paper_operation, (claimer)(author)(permlink) )
 
 #ifdef STEEM_ENABLE_SMT
 FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_curation_rewards) )

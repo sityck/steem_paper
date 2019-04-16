@@ -2804,6 +2804,33 @@ void paper_vote_evaluator::do_apply( const paper_vote_operation& o )
  // end EDIT case
 } FC_CAPTURE_AND_RETHROW( (o) ) }
 
+void claim_paper_evaluator::do_apply( const claim_paper_operation& o )
+{ try {
+
+   const auto& by_permlink_idx = _db.get_index< comment_index >().indices().get< by_permlink >();
+   auto itr = by_permlink_idx.find( boost::make_tuple( o.author, o.permlink ) );
+
+   //const auto& auth = _db.get_account( o.author ); /// prove it exists
+
+   FC_ASSERT(  o.author != o.claimer, "The voter can't equal to author." );
+
+   FC_ASSERT(  itr != by_permlink_idx.end() , "The comment must be exists." );
+      
+   const auto& comment = *itr;
+
+   #ifndef IS_LOW_MEM
+      _db.modify( _db.get< comment_content_object, by_comment >( comment.id ), [&]( comment_content_object& con )
+      {
+            con.type = "claimed";
+      });
+
+      _db.modify( comment, [&]( comment_object& c ) {
+            c.author = o.claimer;
+      });
+   #endif
+ // end EDIT case
+} FC_CAPTURE_AND_RETHROW( (o) ) }
+
 #ifdef STEEM_ENABLE_SMT
 void claim_reward_balance2_evaluator::do_apply( const claim_reward_balance2_operation& op )
 {

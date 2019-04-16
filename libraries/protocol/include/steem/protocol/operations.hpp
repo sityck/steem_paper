@@ -66,6 +66,7 @@ namespace steem { namespace protocol {
             account_create_with_delegation_operation,
             witness_set_properties_operation,
             paper_vote_operation,
+            claim_paper_operation,
 
 #ifdef STEEM_ENABLE_SMT
             /// SMT operations
