@@ -1,5 +1,6 @@
 #pragma once
 #include <steem/plugins/json_rpc/utility.hpp>
+#include <steem/protocol/types.hpp>
 
 #include <fc/optional.hpp>
 #include <fc/variant.hpp>
@@ -14,14 +15,19 @@ namespace detail{
     class demo_api_impl;
 }
 
-struct get_sum_return
+struct get_reviewer_return
 {
-    int64_t sum;
+    string   reviewer1;
+    string   reviewer2;
+    string   reviewer3;
+    string   reviewer4;
+    string   reviewer5;
+    string   reviewer6;
 };
 
-struct get_sum_args
+struct get_reviewer_args
 {
-    std::vector<int64_t> nums;
+    uint32_t   arg;
 };
 
 
@@ -35,7 +41,7 @@ public:
     ~demo_api();
 
     DECLARE_API(
-        (get_sum)
+        (get_reviewer)
         )
 };
 
@@ -45,5 +51,5 @@ public:
 }
 }
 
-FC_REFLECT(steem::plugins::demo::get_sum_args,(nums))
-FC_REFLECT(steem::plugins::demo::get_sum_return,(sum))
+FC_REFLECT(steem::plugins::demo::get_reviewer_args,(arg))
+FC_REFLECT(steem::plugins::demo::get_reviewer_return,(reviewer1)(reviewer2)(reviewer3)(reviewer4)(reviewer5)(reviewer6))
