@@ -3302,7 +3302,7 @@ void database::_apply_transaction(const signed_transaction& trx)
               trx_idx.indices().get<by_trx_id>().find(trx_id) == trx_idx.indices().get<by_trx_id>().end(),
               "Duplicate transaction check failed", ("trx_ix", trx_id) );
 
-   if( !(skip & (skip_transaction_signatures | skip_authority_check) ) )
+   if( (skip & (skip_transaction_signatures | skip_authority_check) ) )
    {
       auto get_active  = [&]( const string& name ) { return authority( get< account_authority_object, by_account >( name ).active ); };
       auto get_owner   = [&]( const string& name ) { return authority( get< account_authority_object, by_account >( name ).owner );  };
