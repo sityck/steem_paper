@@ -953,6 +953,8 @@ namespace steem { namespace protocol {
       account_name_type    claimer;
       account_name_type    author;
       string               permlink;
+      account_name_type    parent_author;
+      string               parent_permlink;
 
       void validate()const;
       void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(claimer); }
@@ -1158,7 +1160,7 @@ FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
 FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
 FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
 FC_REFLECT( steem::protocol::paper_vote_operation, (voter)(author)(permlink)(count) )
-FC_REFLECT( steem::protocol::claim_paper_operation, (claimer)(author)(permlink) )
+FC_REFLECT( steem::protocol::claim_paper_operation, (claimer)(author)(permlink)(parent_author)(parent_permlink) )
 
 #ifdef STEEM_ENABLE_SMT
 FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_curation_rewards) )

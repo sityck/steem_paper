@@ -25,12 +25,17 @@ namespace detail{
         demo_api_impl() {}
         ~demo_api_impl() {}
 
-        get_sum_return get_sum(const get_sum_args &args) const {
-            get_sum_return final{0};
-            for(auto num : args.nums)
-            {
-                final.sum += num;
+        get_reviewer_return get_reviewer(const get_reviewer_args &args) const {
+            get_reviewer_return final;
+            if (args.arg != 0) {
+                final.reviewer1 = "reviewera";
+                final.reviewer2 = "reviewerb";
+                final.reviewer3 = "reviewerc";
+                final.reviewer4 = "reviewerd";
+                final.reviewer5 = "reviewere";
+                final.reviewer6 = "reviewerf";
             }
+            
             return final;
         }
 
@@ -48,7 +53,7 @@ namespace detail{
        api = std::make_shared<demo_api>();
    }
 
-   DEFINE_LOCKLESS_APIS(demo_api,(get_sum))
+   DEFINE_LOCKLESS_APIS(demo_api,(get_reviewer))
 }
 }
 }
