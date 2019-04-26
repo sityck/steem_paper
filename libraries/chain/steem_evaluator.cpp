@@ -2817,14 +2817,9 @@ void claim_paper_evaluator::do_apply( const claim_paper_operation& o )
    FC_ASSERT(  itr != by_permlink_idx.end() , "The comment must be exists." );
       
    const auto& comment = *itr;
-   const auto& auth = _db.get_account(o.claimer);
-   auto now = _db.head_block_time();
-   uint16_t reward_weight = STEEM_100_PERCENT;
 
-   const comment_object* parent = nullptr;
-   if( o.parent_author != STEEM_ROOT_POST_PARENT ){
-      parent = &_db.get_comment( o.parent_author, o.parent_permlink );
-   }
+
+
 
    #ifndef IS_LOW_MEM
    //edit old paper
@@ -2832,90 +2827,14 @@ void claim_paper_evaluator::do_apply( const claim_paper_operation& o )
       {
             con.type = "claimed";
       });
-
+   #endif
       _db.modify( comment, [&]( comment_object& c ) {
             c.author = o.claimer;
-            reward_weight = c.reward_weight;
-      });
-
-   //update claimer param
-      _db.modify( auth, [&]( account_object& a){
-         a.last_post = now;
-         a.post_count++;
-      });
-
-   //create new paper
-      auto tmp = _db.get< comment_content_object, by_comment >( comment.id );
-      const auto& new_paper = _db.create< comment_object >( [&]( comment_object& paper)
-      {
-         paper.author = o.claimer;
-         from_string( paper.permlink, o.permlink);
-         paper.last_update = _db.head_block_time();
-         paper.created = paper.last_update;
-         paper.active = paper.last_update;
-         paper.last_payout = fc::time_point_sec::min();
-         paper.max_cashout_time = fc::time_point_sec::maximum();
-         paper.reward_weight = reward_weight;
-
-         if ( o.parent_author == STEEM_ROOT_POST_PARENT )
-         {
-            paper.parent_author = "";
-            from_string( paper.parent_permlink, o.parent_permlink );
-            from_string( paper.category, o.parent_permlink );
-            paper.root_comment = paper.id;
-            paper.cashout_time = _db.has_hardfork( STEEM_HARDFORK_0_12__177 ) ?
-               _db.head_block_time() + STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF17 :
-               fc::time_point_sec::maximum();
-
-         }
-         else
-         {
-            paper.parent_author = parent->author;
-            paper.parent_permlink = parent->permlink;
-            paper.depth = parent->depth + 1;
-            paper.category = parent->category;
-            paper.root_comment = parent->root_comment;
-            paper.cashout_time = fc::time_point_sec::maximum();
-         }
-         
-         if( _db.has_hardfork( STEEM_HARDFORK_0_17__769 ) )
-         {
-            paper.cashout_time = paper.created + STEEM_CASHOUT_WINDOW_SECONDS;
-         }
 
       });
 
-      comment_id_type id = new_paper.id;
 
-      _db.create< comment_content_object >( [&]( comment_content_object& con )
-      {
-         con.comment = id;
 
-         con.title = tmp.title;
-         con.body = tmp.body ;
-         con.json_metadata = tmp.json_metadata ;
-         con.reference = tmp.reference; 
-         con.type = tmp.type;
-         con.anonymous = tmp.anonymous;
-         con.affect_count = tmp.affect_count;
-      });
-
-/// this loop can be skiped for validate-only nodes as it is merely gathering stats for indicies
-      now = _db.head_block_time();
-      while( parent ) {
-         _db.modify( *parent, [&]( comment_object& p ){
-            p.children++;
-            p.active = now;
-         });
-
-         if( parent->parent_author != STEEM_ROOT_POST_PARENT )
-            parent = &_db.get_comment( parent->parent_author, parent->parent_permlink );
-         else
-            parent = nullptr;
-      }
-      
-
-   #endif
  // end EDIT case
 } FC_CAPTURE_AND_RETHROW( (o) ) }
 
