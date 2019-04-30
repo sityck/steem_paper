@@ -52,7 +52,8 @@ struct vote_state
 struct discussion : public database_api::api_comment_object
 {
    discussion( const steem::chain::comment_object& o, const steem::chain::database& db ) :
-      database_api::api_comment_object( o, db ) {}
+      database_api::api_comment_object( o, db ),
+      create( o.created ) {}
 
    discussion(){}
 
@@ -68,6 +69,7 @@ struct discussion : public database_api::api_comment_object
    vector< account_name_type >   reblogged_by;
    optional< account_name_type > first_reblogged_by;
    optional< time_point_sec >    first_reblogged_on;
+   time_point_sec                create;
 };
 
 struct get_trending_tags_args
@@ -245,7 +247,7 @@ FC_REFLECT( steem::plugins::tags::vote_state,
             (voter)(weight)(rshares)(percent)(reputation)(time) )
 
 FC_REFLECT_DERIVED( steem::plugins::tags::discussion, (steem::plugins::database_api::api_comment_object),
-            (url)(root_title)(pending_payout_value)(total_pending_payout_value)(active_votes)(replies)(author_reputation)(promoted)(body_length)(reblogged_by)(first_reblogged_by)(first_reblogged_on) )
+            (url)(root_title)(pending_payout_value)(total_pending_payout_value)(active_votes)(replies)(author_reputation)(promoted)(body_length)(reblogged_by)(first_reblogged_by)(first_reblogged_on)(create) )
 
 FC_REFLECT( steem::plugins::tags::get_trending_tags_args,
             (start_tag)(limit) )
