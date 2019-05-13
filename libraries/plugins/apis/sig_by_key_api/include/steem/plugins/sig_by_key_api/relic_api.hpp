@@ -71,6 +71,7 @@ static_assert(MULTI == OPENMP, "Error. Relicxx compiled to use OPENMP. But Relic
 
 namespace relicxx
 {
+
 typedef std::vector<uint8_t> bytes;
 void ro_error(void);
 
@@ -316,6 +317,7 @@ class G1
 
 	bool ismember(const bn_t) const;
 	std::vector<uint8_t> getBytes(bool compress = 0) const;
+	relicxx::G1 setBytes( uint8_t bin[],bool compress = 0) const;
 	template <class Archive>
 	void save(Archive &ar) const
 	{

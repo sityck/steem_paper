@@ -37,11 +37,11 @@ public:
     //返回gsk给group manager,先假设只返回给一个人
     set_group_return final;
     //此处需保存每个group的私钥
-    final.a0 = g2ToStr(gsk.a0);
-    final.a2 = g2ToStr(gsk.a2);
-    final.a3 = g2ToStr(gsk.a3);
-    final.a4 = g2ToStr(gsk.a4);
-    final.a5 = g1ToStr(gsk.a5);
+    final.a0 = g2ToBin(gsk.a0);
+    final.a2 = g2ToBin(gsk.a2);
+    final.a3 = g2ToBin(gsk.a3);
+    final.a4 = g2ToBin(gsk.a4);
+    final.a5 = g1ToBin(gsk.a5);
     return final;
   }
   join_group_return join_group(const join_group_args &args)
@@ -53,10 +53,10 @@ public:
     join(groupID, userID, gsk, usk, mpk);
     join_group_return final;
 
-    final.b0 = g2ToStr(usk.b0);
-    final.b3 = g2ToStr(usk.b3);
-    final.b4 = g2ToStr(usk.b4);
-    final.b5 = g1ToStr(usk.b5);
+    final.b0 = g2ToBin(usk.b0);
+    final.b3 = g2ToBin(usk.b3);
+    final.b4 = g2ToBin(usk.b4);
+    final.b5 = g1ToBin(usk.b5);
     return final;
   }
   // 返回用户签名
@@ -65,23 +65,21 @@ public:
     set_up();
     get_sig_return final;
     UserSecretKey usk;
-    usk.b0 = strToG2(args.b0);
-    usk.b3 = strToG2(args.b3);
-    usk.b4 = strToG2(args.b4);
-    usk.b5 = strToG1(args.b5);
+    usk.b0 = binToG2(args.b0);
+    usk.b3 = binToG2(args.b3);
+    usk.b4 = binToG2(args.b4);
+    usk.b5 = binToG1(args.b5);
     Signature sig;
     relicxx::ZR m = group.hashListToZR(args.m);
     sign(args.groupID, args.userID, m, usk, sig, mpk);
 
-    final.c0 = g2ToStr(sig.c0);
-    final.c5 = g1ToStr(sig.c5);
-    final.c6 = g2ToStr(sig.c6);
-    final.e1 = g1ToStr(sig.e1);
-    final.e2 = g2ToStr(sig.e2);
-    final.e3 = gtToStr(sig.e3);
-    final.x = zrToStr(sig.x);
-    final.y = zrToStr(sig.y);
-    final.z = zrToStr(sig.z);
+    final.c0 = g2ToBin(sig.c0);
+    final.c5 = g1ToBin(sig.c5);
+    final.c6 = g2ToBin(sig.c6);
+    final.e1 = g1ToBin(sig.e1);
+    final.e2 = g2ToBin(sig.e2);
+    final.e3 = gtToBin(sig.e3);
+
     return final;
   }
   open_paper_return open_paper(const open_paper_args args)
@@ -89,15 +87,12 @@ public:
     set_up();
     open_paper_return final;
     Signature sig;
-    sig.c0 = strToG2(args.c0);
-    sig.c5 = strToG1(args.c5);
-    sig.c6 = strToG2(args.c6);
-    sig.e1 = strToG1(args.e1);
-    sig.e2 = strToG2(args.e2);
-    sig.e3 = strToGT(args.e3);
-    sig.x = strToZR(args.x);
-    sig.y = strToZR(args.y);
-    sig.z = strToZR(args.z);
+    sig.c0 = binToG2(args.c0);
+    sig.c5 = binToG1(args.c5);
+    sig.c6 = binToG2(args.c6);
+    sig.e1 = binToG1(args.e1);
+    sig.e2 = binToG2(args.e2);
+    sig.e3 = binToGT(args.e3);
     final.result = open(mpk, gsk, sig, args.userID);
     return final;
   }
@@ -106,15 +101,13 @@ public:
     set_up();
     verify_user_return final;
     Signature sig;
-    sig.c0 = strToG2(args.c0);
-    sig.c5 = strToG1(args.c5);
-    sig.c6 = strToG2(args.c6);
-    sig.e1 = strToG1(args.e1);
-    sig.e2 = strToG2(args.e2);
-    sig.e3 = strToGT(args.e3);
-    sig.x = strToZR(args.x);
-    sig.y = strToZR(args.y);
-    sig.z = strToZR(args.z);
+    sig.c0 = binToG2(args.c0);
+    sig.c5 = binToG1(args.c5);
+    sig.c6 = binToG2(args.c6);
+    sig.e1 = binToG1(args.e1);
+    sig.e2 = binToG2(args.e2);
+    sig.e3 = binToGT(args.e3);
+
     final.result = verify(group.hashListToZR(args.m), sig, args.groupID, mpk);
     return final;
   }
@@ -127,40 +120,37 @@ public:
     set_group_return sgr = set_group(set_args);
 
     GroupSecretKey gsk2;
-    gsk2.a0 = strToG2(sgr.a0);
-    gsk2.a2 = strToG2(sgr.a2);
-    gsk2.a3 = strToG2(sgr.a3);
-    gsk2.a4 = strToG2(sgr.a4);
-    gsk2.a5 = strToG1(sgr.a5);
+    gsk2.a0 = binToG2(sgr.a0);
+    gsk2.a2 = binToG2(sgr.a2);
+    gsk2.a3 = binToG2(sgr.a3);
+    gsk2.a4 = binToG2(sgr.a4);
+    gsk2.a5 = binToG1(sgr.a5);
 
     const join_group_args join_args{.groupID = "science", .userID = "www"};
     join_group_return jgr = join_group(join_args);
     UserSecretKey usk2;
 
-    usk2.b0 = strToG2(jgr.b0);
-    usk2.b3 = strToG2(jgr.b3);
-    usk2.b4 = strToG2(jgr.b4);
-    usk2.b5 = strToG1(jgr.b5);
+    usk2.b0 = binToG2(jgr.b0);
+    usk2.b3 = binToG2(jgr.b3);
+    usk2.b4 = binToG2(jgr.b4);
+    usk2.b5 = binToG1(jgr.b5);
 
     string str = "123";
     get_sig_args sig_args{.groupID = "science", .userID = "www", .m = str, .b0 = jgr.b0, .b3 = jgr.b3, .b4 = jgr.b4, .b5 = jgr.b5};
     get_sig_return gsr = get_sig(sig_args);
     Signature sig;
 
-    sig.c0 = strToG2(gsr.c0);
-    sig.c5 = strToG1(gsr.c5);
-    sig.c6 = strToG2(gsr.c6);
-    sig.e1 = strToG1(gsr.e1);
-    sig.e2 = strToG2(gsr.e2);
-    sig.e3 = strToGT(gsr.e3);
-    sig.x = strToZR(gsr.x);
-    sig.y = strToZR(gsr.y);
-    sig.z = strToZR(gsr.z);
+    sig.c0 = binToG2(gsr.c0);
+    sig.c5 = binToG1(gsr.c5);
+    sig.c6 = binToG2(gsr.c6);
+    sig.e1 = binToG1(gsr.e1);
+    sig.e2 = binToG2(gsr.e2);
+    sig.e3 = binToGT(gsr.e3);
 
-    open_paper_args open_args{.userID = "www", .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .x = gsr.x, .y = gsr.y, .z = gsr.z};
+    open_paper_args open_args{.userID = "www", .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .c = gsr.c, .s1 = gsr.s1, .s2 = gsr.s2, .s3 = gsr.s3};
     open_paper_return opr = open_paper(open_args);
 
-    verify_user_args ver_args{.groupID = "science", .m = str, .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .x = gsr.x, .y = gsr.y, .z = gsr.z};
+    verify_user_args ver_args{.groupID = "science", .m = str, .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .c = gsr.c, .s1 = gsr.s1, .s2 = gsr.s2, .s3 = gsr.s3};
     if (verify_user(ver_args).result == true && opr.result == true)
       final.result = "true";
     else
@@ -254,34 +244,78 @@ private:
 
     sig.e3 = group.exp(group.pair(mpk.g2, mpk.hibeg1), k);
     sig.e3 = group.mul(sig.e3, group.exp(mpk.n, gUserID));
-    sig.x = gUserID;
-    sig.y = r4;
-    sig.z = k;
+
+    ZR k1 = group.randomZR();
+    ZR k2 = group.randomZR();
+    ZR k3 = group.randomZR();
+    relicxx::G2 t1 = group.mul(group.exp(mpk.hG2.at(2), k1), group.exp(mpk.hG2.at(4), k2));
+    relicxx::G1 t2 = group.exp(mpk.g, k3);
+    relicxx::G2 r = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
+    relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
+    relicxx::G2 t3 = group.exp(r, k3);
+    relicxx::GT t4 = group.mul(group.exp(mpk.n, k1), group.exp(gt, k3));
+
+    ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
+                              g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
+                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(r) +
+                              gtToStr(mpk.n) + gtToStr(gt) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
+                              gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
+    sig.c = c;
+    sig.s1 = k1 + group.mul(c, gUserID);
+    sig.s2 = k2 + group.mul(c, r4);
+    sig.s3 = k3 + group.mul(c, k);
+    /*relicxx::G1 g = group.randomG1();
+    cout << g << endl;
+    cout << g.g << endl;
+
+    g1ToStr(g);
+   uint8_t bin[len];
+    for (int i = 0; i < data.size(); i++)
+    {
+      cout << (unsigned int)data[i];
+      bin[i] = (unsigned int)data[i];
+    }
+    cout << endl;
+    relicxx::G1 g2 = g.setBytes(bin);
+    cout << "g2";
+    cout << g2 << endl;
+    cout << "g2.g";
+    cout << g2.g;
+    if (g1_cmp(g.g, g2.g) == CMP_EQ)
+      cout << "hello";
+    else
+      cout << "bye"; */
   }
   bool verify(const ZR &m, const Signature &sig, const string &groupID, const MasterPublicKey &mpk)
   {
     const ZR gGroupID = group.hashListToZR(groupID);
-    const ZR y = sig.y;
     const ZR t = group.randomZR();
     const GT M = group.randomGT();
-    const ZR k = sig.z;
     relicxx::G1 d1 = group.exp(mpk.g, t);
     relicxx::G2 d2 = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
     d2 = group.exp(group.mul(d2, group.mul(group.exp(mpk.hG2.at(3), m), sig.c6)), t);
     relicxx::GT delta3 = group.mul(M, group.exp(group.pair(mpk.hibeg1, mpk.g2), t));
     relicxx::GT result = group.mul(delta3, group.div(group.pair(sig.c5, d2), group.pair(d1, sig.c0)));
-    cout << (M == result) << (sig.c6 == group.mul(group.exp(mpk.hG2.at(2), sig.x), group.exp(mpk.hG2.at(4), y))) << (sig.e1 == group.exp(mpk.g, k)) << (sig.e2 == group.exp(group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID)), k)) << (sig.e3 == group.mul(group.exp(mpk.n, sig.x), group.exp(group.pair(mpk.hibeg1, mpk.g2), k)));
-    return M == result &&
-           sig.c6 == group.mul(group.exp(mpk.hG2.at(2), sig.x), group.exp(mpk.hG2.at(4), y)) &&
-           sig.e1 == group.exp(mpk.g, k) &&
-           sig.e2 == group.exp(group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID)), k) &&
-           sig.e3 == group.mul(group.exp(mpk.n, sig.x), group.exp(group.pair(mpk.hibeg1, mpk.g2), k));
+    //pok verify
+    relicxx::G2 t1 = group.mul(group.mul(group.exp(mpk.hG2.at(2), sig.s1), group.exp(mpk.hG2.at(4), sig.s2)), group.exp(sig.c6, -sig.c));
+    relicxx::G1 t2 = group.mul(group.exp(mpk.g, sig.s3), group.exp(sig.e1, -sig.c));
+    relicxx::G2 r = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
+    relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
+    relicxx::G2 t3 = group.mul(group.exp(r, sig.s3), group.exp(sig.e2, -sig.c));
+    relicxx::GT t4 = group.mul(group.mul(group.exp(mpk.n, sig.s1), group.exp(gt, sig.s3)), group.exp(sig.e3, -sig.c));
+    ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
+                              g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
+                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(r) +
+                              gtToStr(mpk.n) + gtToStr(gt) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
+                              gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
+    //return M == result && sig.c == c;
+    return M == result;
   }
 
   bool open(const MasterPublicKey &mpk, const GroupSecretKey &gsk, const Signature &sig, string userID)
   {
     const ZR gUserID = group.hashListToZR(userID);
-    relicxx::GT t = group.exp(group.pair(mpk.hibeg1, mpk.g2), sig.z);
+    relicxx::GT t = group.div(group.pair(sig.e1, gsk.a0), group.pair(gsk.a5, sig.e2));
     //goes through all user identifiers here
     if (sig.e3 == group.mul(group.exp(mpk.n, gUserID), t))
       return true;
@@ -301,16 +335,16 @@ private:
     string u4 = "03023afaeeb25eb44de70edee8b47f24f681592f820c4e5874837fb09f2bdfb05c3661488e917ea489240c3f2b2f4c202ab314f4ad0281cd611e90e7568d584f25d2c902000000000000000000000000287e580300000000c66155c71a7f00000100000000000000207e580300000000207e5803000000000fab4dc81a7f0000c3";
     string n = "0066f837d6aaf4d69618917009d0b3c61dc670e614a50d98788cd22400f93c6f22fc9fd14feaff20528338278548c68b71f2a60caed5c8568a61301de0c3256997d26fcf602973721435f651bc6ca3d9230ad04d0b261ae18ca2ab9ae3de01097d518908191408010a85b1ef849579f68286da897c699f394fc48cfb8c1ce3e4a32fa6404a88d40b6d6f571434d7fff3a376c16f25848e8cc3a3cd09236dead65ad8203d97d42b68e76bd2dda61e4edebd1dac6ef620af540bb5a776720633537808a32b1f57b7427849becb1ad34577f089fa78e471fc273d9c6ed9b950aaec23f2be2d40fdb004b6ab3b16c7550eaebc585921acc0acf8eefc928356bdf553801800f40c7f0000207e580300000000287e580300000000b03a990400000000c05429c61a7f0000020000000000000010040000000000007a5c55c71a7f0000d59991020000000000000000000000006077e8c61a7f0000e05429c61a7f00000100000000000000207e580300000000207e580300000000000fbb96801eca69";
     string smsk = "02852d3c40a12f7b1b1d930b0324d90c7a2bd28b4eda25e0210318d2c4d9b33eacb32c094e3b48c78cfaf99272b69c5004b072e725145d1624ed35177810e022d8687a020000000000000000000000006077e8c61a7f0000e05429c61a7f00000100000000000000207e580300000000207e5803000000000fab4dc81a7f000083";
-    mpk.g = strToG1(g);
-    mpk.g2 = strToG2(g2);
-    mpk.hibeg1 = strToG1(hibeg1);
-    mpk.hG2.push_back(strToG2(u0));
-    mpk.hG2.push_back(strToG2(u1));
-    mpk.hG2.push_back(strToG2(u2));
-    mpk.hG2.push_back(strToG2(u3));
-    mpk.hG2.push_back(strToG2(u4));
-    mpk.n = strToGT(n);
-    msk = strToG2(smsk);
+    mpk.g = binToG1(g);
+    mpk.g2 = binToG2(g2);
+    mpk.hibeg1 = binToG1(hibeg1);
+    mpk.hG2.push_back(binToG2(u0));
+    mpk.hG2.push_back(binToG2(u1));
+    mpk.hG2.push_back(binToG2(u2));
+    mpk.hG2.push_back(binToG2(u3));
+    mpk.hG2.push_back(binToG2(u4));
+    mpk.n = binToGT(n);
+    msk = binToG2(smsk);
     //setup(mpk, msk);
   }
 
@@ -319,7 +353,7 @@ private:
     //此处需读取数据库返回群私钥
     return group.randomG2();
   }
-  string g1ToStr(relicxx::G1 g) const
+  string g1ToBin(relicxx::G1 g) const
   {
     int len = 4 * FP_BYTES + 1;
     uint8_t bin[len];
@@ -337,7 +371,20 @@ private:
 
     return str;
   }
-  relicxx::G1 strToG1(string str) const
+  string g1ToStr(relicxx::G1 g)
+  {
+    string str = "";
+    auto data = g.getBytes();
+    stringstream ss;
+    for (auto i : data)
+    {
+      ss << std::hex << (unsigned int)data[i];
+    }
+    str = ss.str();
+
+    return str;
+  }
+  relicxx::G1 binToG1(string str) const
   {
     relicxx::G1 g;
     relicxx::G1 g2 = group.randomG1();
@@ -354,7 +401,7 @@ private:
 
     return g;
   }
-  string g2ToStr(relicxx::G2 g) const
+  string g2ToBin(relicxx::G2 g) const
   {
     int len = 4 * FP_BYTES + 1;
     uint8_t bin[len];
@@ -373,7 +420,20 @@ private:
 
     return str;
   }
-  relicxx::G2 strToG2(string str) const
+  string g2ToStr(relicxx::G2 g)
+  {
+    string str;
+    auto data = g.getBytes();
+    stringstream ss;
+    for (auto i : data)
+    {
+      ss << std::hex << (unsigned int)data[i];
+    }
+    str = ss.str();
+
+    return str;
+  }
+  relicxx::G2 binToG2(string str) const
   {
     relicxx::G2 g;
     relicxx::G2 g2 = group.randomG2();
@@ -390,7 +450,7 @@ private:
 
     return g;
   }
-  string gtToStr(relicxx::GT g) const
+  string gtToBin(relicxx::GT g) const
   {
     int len = 12 * PC_BYTES;
     uint8_t bin[len];
@@ -409,7 +469,20 @@ private:
 
     return str;
   }
-  relicxx::GT strToGT(string str) const
+  string gtToStr(relicxx::GT g)
+  {
+    string str;
+    auto data = g.getBytes();
+    stringstream ss;
+    for (auto i : data)
+    {
+      ss << std::hex << (unsigned int)data[i];
+    }
+    str = ss.str();
+
+    return str;
+  }
+  relicxx::GT binToGT(string str) const
   {
     relicxx::GT g;
     relicxx::GT g2 = group.randomGT();

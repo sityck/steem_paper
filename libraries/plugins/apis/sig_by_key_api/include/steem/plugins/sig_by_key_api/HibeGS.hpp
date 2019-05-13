@@ -126,6 +126,10 @@ class Signature
 	relicxx::ZR x;
 	relicxx::ZR y;
 	relicxx::ZR z;
+	relicxx::ZR c;
+	relicxx::ZR s1;
+	relicxx::ZR s2;
+	relicxx::ZR s3;
 	template <class Archive>
 	void serialize(Archive &ar)
 	{

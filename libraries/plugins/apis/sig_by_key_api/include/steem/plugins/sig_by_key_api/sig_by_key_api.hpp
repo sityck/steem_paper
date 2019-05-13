@@ -66,9 +66,10 @@ struct get_sig_return
   string e1;
   string e2;
   string e3;
-  string x;
-  string y;
-  string z;
+  string c;
+  string s1;
+  string s2;
+  string s3;
 };
 struct open_paper_args
 {
@@ -79,15 +80,17 @@ struct open_paper_args
   string e1;
   string e2;
   string e3;
-  string x;
-  string y;
-  string z;
+  string c;
+  string s1;
+  string s2;
+  string s3;
 };
 struct open_paper_return
 {
   bool result;
 };
-struct verify_user_args{
+struct verify_user_args
+{
   string groupID;
   string m;
   string c0;
@@ -96,12 +99,13 @@ struct verify_user_args{
   string e1;
   string e2;
   string e3;
-  string x;
-  string y;
-  string z;
-
+  string c;
+  string s1;
+  string s2;
+  string s3;
 };
-struct verify_user_return{
+struct verify_user_return
+{
   bool result;
 };
 struct test_args
@@ -129,14 +133,14 @@ private:
 
 // 将方法输入、输出参数进行反射
 FC_REFLECT(steem::plugins::sig_by_key::get_sig_args, (groupID)(userID)(m)(b0)(b3)(b4)(b5))
-FC_REFLECT(steem::plugins::sig_by_key::get_sig_return, (c0)(c5)(c6)(e1)(e2)(e3)(x)(y)(z))
+FC_REFLECT(steem::plugins::sig_by_key::get_sig_return, (c0)(c5)(c6)(e1)(e2)(e3)(c)(s1)(s2)(s3))
 FC_REFLECT(steem::plugins::sig_by_key::set_group_args, (groupID))
 FC_REFLECT(steem::plugins::sig_by_key::set_group_return, (a0)(a2)(a3)(a4)(a5))
 FC_REFLECT(steem::plugins::sig_by_key::join_group_args, (groupID)(userID))
 FC_REFLECT(steem::plugins::sig_by_key::join_group_return, (b0)(b3)(b4)(b5))
 FC_REFLECT(steem::plugins::sig_by_key::test_args, (test))
 FC_REFLECT(steem::plugins::sig_by_key::test_return, (result))
-FC_REFLECT(steem::plugins::sig_by_key::open_paper_args, (userID)(c0)(c5)(c6)(e1)(e2)(e3)(x)(y)(z))
+FC_REFLECT(steem::plugins::sig_by_key::open_paper_args, (userID)(c0)(c5)(c6)(e1)(e2)(e3)(c)(s1)(s2)(s3))
 FC_REFLECT(steem::plugins::sig_by_key::open_paper_return, (result))
-FC_REFLECT(steem::plugins::sig_by_key::verify_user_args, (groupID)(m)(c0)(c5)(c6)(e1)(e2)(e3)(x)(y)(z))
+FC_REFLECT(steem::plugins::sig_by_key::verify_user_args, (groupID)(m)(c0)(c5)(c6)(e1)(e2)(e3)(c)(s1)(s2)(s3))
 FC_REFLECT(steem::plugins::sig_by_key::verify_user_return, (result))
