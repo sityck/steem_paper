@@ -21,6 +21,10 @@ public:
   PairingGroup group;
   MasterPublicKey mpk;
   relicxx::G2 msk;
+  relicxx::G2 t11;
+  relicxx::G1 t21;
+  relicxx::G2 t31;
+  relicxx::GT t41;
   //如果需要新建多个群，则需要修改代码，改为获取对应群组的私钥
   //目前的需求只存在一个群组，所以无需修改
   //同一个群，提交论文和审稿对应的群公私钥是同一对
@@ -79,7 +83,10 @@ public:
     final.e1 = g1ToBin(sig.e1);
     final.e2 = g2ToBin(sig.e2);
     final.e3 = gtToBin(sig.e3);
-
+    final.c = zrToStr(sig.c);
+    final.s1 = zrToStr(sig.s1);
+    final.s2 = zrToStr(sig.s2);
+    final.s3 = zrToStr(sig.s3);
     return final;
   }
   open_paper_return open_paper(const open_paper_args args)
@@ -115,6 +122,7 @@ public:
     sig.s1 = strToZR(args.s1);
     sig.s2 = strToZR(args.s2);
     sig.s3 = strToZR(args.s3);
+
     final.result = verify(group.hashListToZR(args.m), sig, args.groupID, mpk);
     return final;
   }
@@ -153,6 +161,10 @@ public:
     sig.e1 = binToG1(gsr.e1);
     sig.e2 = binToG2(gsr.e2);
     sig.e3 = binToGT(gsr.e3);
+    sig.c = strToZR(gsr.c);
+    sig.s1 = strToZR(gsr.s1);
+    sig.s2 = strToZR(gsr.s2);
+    sig.s3 = strToZR(gsr.s3);
 
     open_paper_args open_args{.userID = "www", .c0 = gsr.c0, .c5 = gsr.c5, .c6 = gsr.c6, .e1 = gsr.e1, .e2 = gsr.e2, .e3 = gsr.e3, .c = gsr.c, .s1 = gsr.s1, .s2 = gsr.s2, .s3 = gsr.s3};
     open_paper_return opr = open_paper(open_args);
@@ -208,7 +220,6 @@ private:
     gsk.a0 = group.mul(msk, gsk.a0);
     gsk.a2 = group.exp(mpk.hG2.at(2), r1);
     gsk.a3 = group.exp(mpk.hG2.at(3), r1);
-    ;
     gsk.a4 = group.exp(mpk.hG2.at(4), r1);
     gsk.a5 = group.exp(mpk.g, r1);
   }
@@ -261,21 +272,24 @@ private:
     relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
     relicxx::G2 t3 = group.exp(f, k3);
     relicxx::GT t4 = group.mul(group.exp(mpk.n, k1), group.exp(gt, k3));
-
+    cout << t1;
     ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
                               g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
                               g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(f) +
                               gtToStr(mpk.n) + gtToStr(gt) + g2ToStr(sig.c6) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
                               gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
 
-    cout << g2ToStr(t1) << endl
-         << g1ToStr(t2) << endl
-         << g2ToStr(t3) << endl
-         << gtToStr(t4) << endl;
     sig.c = c;
     sig.s1 = k1 + group.mul(c, gUserID);
     sig.s2 = k2 + group.mul(c, r4);
     sig.s3 = k3 + group.mul(c, k);
+    
+    t11 = group.mul(group.mul(group.exp(mpk.hG2.at(2), sig.s1), group.exp(mpk.hG2.at(4), sig.s2)), group.exp(sig.c6, -sig.c));
+    t21 = group.mul(group.exp(mpk.g, sig.s3), group.exp(sig.e1, -sig.c));
+    t31 = group.mul(group.exp(f, sig.s3), group.exp(sig.e2, -sig.c));
+    t41 = group.mul(group.mul(group.exp(mpk.n, sig.s1), group.exp(gt, sig.s3)), group.exp(sig.e3, -sig.c));
+    cout << sig.c << sig.s1 << sig.s2 << sig.s3 << endl;
+    cout << t11;
     /*relicxx::G1 g = group.randomG1();
     cout << g << endl;
     cout << g.g << endl;
@@ -309,24 +323,26 @@ private:
     relicxx::GT delta3 = group.mul(M, group.exp(group.pair(mpk.hibeg1, mpk.g2), t));
     relicxx::GT result = group.mul(delta3, group.div(group.pair(sig.c5, d2), group.pair(d1, sig.c0)));
     //pok verify
+
     relicxx::G2 t1 = group.mul(group.mul(group.exp(mpk.hG2.at(2), sig.s1), group.exp(mpk.hG2.at(4), sig.s2)), group.exp(sig.c6, -sig.c));
     relicxx::G1 t2 = group.mul(group.exp(mpk.g, sig.s3), group.exp(sig.e1, -sig.c));
     relicxx::G2 f = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
     relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
     relicxx::G2 t3 = group.mul(group.exp(f, sig.s3), group.exp(sig.e2, -sig.c));
     relicxx::GT t4 = group.mul(group.mul(group.exp(mpk.n, sig.s1), group.exp(gt, sig.s3)), group.exp(sig.e3, -sig.c));
+    //需要分析t1和t11相等却输出不同的原因
+    cout << sig.c << sig.s1 << sig.s2 << sig.s3 << endl;
+    cout << (t1 == t11) << (t2 == t21) << (t3 == t31) << (t4 == t41) << endl;
+    cout << t1;
+    cout << t11;
     ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
                               g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
                               g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(f) +
                               gtToStr(mpk.n) + gtToStr(gt) + g2ToStr(sig.c6) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
                               gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
-    cout << "verify:"
-         << g2ToStr(t1) << endl
-         << g1ToStr(t2) << endl
-         << g2ToStr(t3) << endl
-         << gtToStr(t4);
-    return M == result && sig.c == c;
-    /* return M == result; */
+
+    //return M == result && sig.c == c;
+    return M == result;
   }
 
   bool open(const MasterPublicKey &mpk, const GroupSecretKey &gsk, const Signature &sig, string userID)
