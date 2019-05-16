@@ -93,6 +93,10 @@ public:
     sig.e1 = binToG1(args.e1);
     sig.e2 = binToG2(args.e2);
     sig.e3 = binToGT(args.e3);
+    sig.c = strToZR(args.c);
+    sig.s1 = strToZR(args.s1);
+    sig.s2 = strToZR(args.s2);
+    sig.s3 = strToZR(args.s3);
     final.result = open(mpk, gsk, sig, args.userID);
     return final;
   }
@@ -107,7 +111,10 @@ public:
     sig.e1 = binToG1(args.e1);
     sig.e2 = binToG2(args.e2);
     sig.e3 = binToGT(args.e3);
-
+    sig.c = strToZR(args.c);
+    sig.s1 = strToZR(args.s1);
+    sig.s2 = strToZR(args.s2);
+    sig.s3 = strToZR(args.s3);
     final.result = verify(group.hashListToZR(args.m), sig, args.groupID, mpk);
     return final;
   }
@@ -228,7 +235,7 @@ private:
     const ZR r3 = group.randomZR();
     //r4 use to blind identity
     const ZR r4 = group.randomZR();
-    //user to encrypt identity to the group manager
+    //used to encrypt identity to the group manager
     const ZR k = group.randomZR();
     relicxx::G2 res = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
     res = group.mul(res, group.exp(mpk.hG2.at(2), gUserID));
@@ -250,16 +257,21 @@ private:
     ZR k3 = group.randomZR();
     relicxx::G2 t1 = group.mul(group.exp(mpk.hG2.at(2), k1), group.exp(mpk.hG2.at(4), k2));
     relicxx::G1 t2 = group.exp(mpk.g, k3);
-    relicxx::G2 r = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
+    relicxx::G2 f = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
     relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
-    relicxx::G2 t3 = group.exp(r, k3);
+    relicxx::G2 t3 = group.exp(f, k3);
     relicxx::GT t4 = group.mul(group.exp(mpk.n, k1), group.exp(gt, k3));
 
     ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
                               g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
-                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(r) +
-                              gtToStr(mpk.n) + gtToStr(gt) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
+                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(f) +
+                              gtToStr(mpk.n) + gtToStr(gt) + g2ToStr(sig.c6) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
                               gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
+
+    cout << g2ToStr(t1) << endl
+         << g1ToStr(t2) << endl
+         << g2ToStr(t3) << endl
+         << gtToStr(t4) << endl;
     sig.c = c;
     sig.s1 = k1 + group.mul(c, gUserID);
     sig.s2 = k2 + group.mul(c, r4);
@@ -269,7 +281,7 @@ private:
     cout << g.g << endl;
 
     g1ToStr(g);
-   uint8_t bin[len];
+    uint8_t bin[len];
     for (int i = 0; i < data.size(); i++)
     {
       cout << (unsigned int)data[i];
@@ -299,17 +311,22 @@ private:
     //pok verify
     relicxx::G2 t1 = group.mul(group.mul(group.exp(mpk.hG2.at(2), sig.s1), group.exp(mpk.hG2.at(4), sig.s2)), group.exp(sig.c6, -sig.c));
     relicxx::G1 t2 = group.mul(group.exp(mpk.g, sig.s3), group.exp(sig.e1, -sig.c));
-    relicxx::G2 r = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
+    relicxx::G2 f = group.mul(mpk.hG2.at(0), group.exp(mpk.hG2.at(1), gGroupID));
     relicxx::GT gt = group.pair(mpk.hibeg1, mpk.g2);
-    relicxx::G2 t3 = group.mul(group.exp(r, sig.s3), group.exp(sig.e2, -sig.c));
+    relicxx::G2 t3 = group.mul(group.exp(f, sig.s3), group.exp(sig.e2, -sig.c));
     relicxx::GT t4 = group.mul(group.mul(group.exp(mpk.n, sig.s1), group.exp(gt, sig.s3)), group.exp(sig.e3, -sig.c));
     ZR c = group.hashListToZR(groupID + g2ToStr(mpk.hG2.at(0)) +
                               g2ToStr(mpk.hG2.at(1)) + g2ToStr(mpk.hG2.at(2)) +
-                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(r) +
-                              gtToStr(mpk.n) + gtToStr(gt) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
+                              g2ToStr(mpk.hG2.at(4)) + g1ToStr(mpk.g) + g2ToStr(f) +
+                              gtToStr(mpk.n) + gtToStr(gt) + g2ToStr(sig.c6) + g1ToStr(sig.e1) + g2ToStr(sig.e2) +
                               gtToStr(sig.e3) + g2ToStr(t1) + g1ToStr(t2) + g2ToStr(t3) + gtToStr(t4));
-    //return M == result && sig.c == c;
-    return M == result;
+    cout << "verify:"
+         << g2ToStr(t1) << endl
+         << g1ToStr(t2) << endl
+         << g2ToStr(t3) << endl
+         << gtToStr(t4);
+    return M == result && sig.c == c;
+    /* return M == result; */
   }
 
   bool open(const MasterPublicKey &mpk, const GroupSecretKey &gsk, const Signature &sig, string userID)

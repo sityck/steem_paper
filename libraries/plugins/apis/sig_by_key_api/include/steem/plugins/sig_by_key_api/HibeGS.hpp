@@ -108,8 +108,7 @@ class Signature
   public:
 	friend bool operator==(const Signature &x, const Signature &y)
 	{
-		return (x.c0 == y.c0 && x.c5 == y.c5 && x.c6 == y.c6 && x.e1 == y.e1 && x.e2 == y.e2 && x.e3 == y.e3 &&
-				x.x == y.x && x.y == y.y && x.z == y.z);
+		return (x.c0 == y.c0 && x.c5 == y.c5 && x.c6 == y.c6 && x.e1 == y.e1 && x.e2 == y.e2 && x.e3 == y.e3);
 	}
 	friend bool operator!=(const Signature &x, const Signature &y)
 	{
@@ -123,9 +122,6 @@ class Signature
 	relicxx::G1 e1;
 	relicxx::G2 e2;
 	relicxx::GT e3;
-	relicxx::ZR x;
-	relicxx::ZR y;
-	relicxx::ZR z;
 	relicxx::ZR c;
 	relicxx::ZR s1;
 	relicxx::ZR s2;
